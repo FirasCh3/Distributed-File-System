@@ -1,2 +1,8 @@
 server/target/
+server/src/*.exe
+server/src/*.pdb
 Slave/target
+Slave/src/*.exe
+Slave/src/*.pdb
+
+

@@ -3,6 +3,14 @@
 version = 3
 
 [[package]]
+name = "Slave"
+version = "0.1.0"
+dependencies = [
+ "net",
+ "threads",
+]
+
+[[package]]
 name = "addr2line"
 version = "0.24.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -49,13 +57,6 @@ name = "cfg-if"
 version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "baf1de4339761588bc0619e3cbc0120ee582ebb74b53b4efbf79117bd2da40fd"
-
-[[package]]
-name = "client"
-version = "0.1.0"
-dependencies = [
- "net",
-]
 
 [[package]]
 name = "fnv"
@@ -254,6 +255,12 @@ dependencies = [
  "quote",
  "unicode-ident",
 ]
+
+[[package]]
+name = "threads"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "33c91b6844452ec2a407b7eaecceae139a2a575edaedee82ababccce05b64284"
 
 [[package]]
 name = "tokio"

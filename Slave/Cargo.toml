@@ -1,7 +1,8 @@
 [package]
-name = "client"
+name = "Slave"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
 net = "0.0.2"
+threads = "0.1.0"
