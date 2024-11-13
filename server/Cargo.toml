@@ -5,3 +5,4 @@ edition = "2021"
 
 [dependencies]
 net = "0.0.2"
+lib = { path = "../lib" }
