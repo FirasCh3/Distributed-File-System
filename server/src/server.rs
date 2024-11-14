@@ -18,18 +18,23 @@ impl Server {
     }
     pub fn store_file(&self, path: &str) {
         let mut offset: u64 = 0;
-        let mut  block1:Vec<u8> = vec![0; 1024];
-        let mut  block2:Vec<u8> = vec![0; 1024];
-        let mut  block3:Vec<u8> = vec![0; 1024];
-        let mut file = File::open(Path::new(path)).unwrap();
-        file.seek_read(&mut block1, offset).unwrap();
-        offset = offset + (block1.len() as u64);
-        file.seek_read(&mut block2, offset).unwrap();
-        offset = offset + (block2.len() as u64);
-        file.seek_read(&mut block3, offset).unwrap();
-        offset = offset + (block3.len() as u64);
-        println!("{:?}", block1);
-        let block : Block = Block::new();
+        let mut  content1:Vec<u8> = vec![0; 1024];
+        let mut  content2:Vec<u8> = vec![0; 1024];
+        let mut  content3:Vec<u8> = vec![0; 1024];
+        let file_path = Path::new(path);
+        let mut file = File::open(file_path).unwrap();
+        file.seek_read(&mut content1, offset).unwrap();
+        offset = offset + (content1.len() as u64);
+        file.seek_read(&mut content2, offset).unwrap();
+        offset = offset + (content2.len() as u64);
+        file.seek_read(&mut content3, offset).unwrap();
+        offset = offset + (content3.len() as u64);
+        let block1 : Block = Block::new(content1, 1, String::from(file_path.file_name().unwrap().to_str().unwrap()));
+        let block2 : Block = Block::new(content2, 2, String::from(file_path.file_name().unwrap().to_str().unwrap()));
+        let block3 : Block = Block::new(content3, 3, String::from(file_path.file_name().unwrap().to_str().unwrap()));
+
+
+
 
     }
 
