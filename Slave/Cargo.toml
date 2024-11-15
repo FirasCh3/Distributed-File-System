@@ -7,4 +7,5 @@ edition = "2021"
 net = "0.0.2"
 threads = "0.1.0"
 lib = { path = "../lib" }
+serde_json = "1.0.132"
 

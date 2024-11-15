@@ -1,7 +1,10 @@
 use std::fs::File;
+use std::io::Write;
 use std::os::windows::fs::FileExt;
 use std::path::Path;
 use lib::Block;
+use std::net::TcpStream;
+
 pub struct Server {
     slaves: [String; 3],
 }
@@ -29,9 +32,13 @@ impl Server {
         offset = offset + (content2.len() as u64);
         file.seek_read(&mut content3, offset).unwrap();
         offset = offset + (content3.len() as u64);
-        let block1 : Block = Block::new(content1, 1, String::from(file_path.file_name().unwrap().to_str().unwrap()));
-        let block2 : Block = Block::new(content2, 2, String::from(file_path.file_name().unwrap().to_str().unwrap()));
-        let block3 : Block = Block::new(content3, 3, String::from(file_path.file_name().unwrap().to_str().unwrap()));
+        let block1  = serde_json::to_string(&Block::new(content1, 1, String::from(file_path.file_name().unwrap().to_str().unwrap()))).unwrap();
+        let block2  = serde_json::to_string(&Block::new(content2, 2, String::from(file_path.file_name().unwrap().to_str().unwrap()))).unwrap();
+        let block3  = serde_json::to_string(&Block::new(content3, 3, String::from(file_path.file_name().unwrap().to_str().unwrap()))).unwrap();
+        for slave_address in &self.slaves{
+                let mut tcp_stream = TcpStream::connect(slave_address).unwrap();
+                tcp_stream.write_all(&block1.as_bytes()).unwrap()
+        }
 
 
 

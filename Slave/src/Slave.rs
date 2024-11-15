@@ -1,5 +1,7 @@
 use std::io::{Read, Write};
 use std::net::{Ipv4Addr, Shutdown, SocketAddrV4, TcpListener, TcpStream};
+use lib::Block;
+
 #[derive(Debug)]
 pub struct Slave {
     address: SocketAddrV4,
@@ -12,19 +14,23 @@ impl Slave {
             port,
         };
     }
-    pub fn listen(&self) -> std::io::Result<()> {
+    pub fn listen_and_serve(&self) -> std::io::Result<()> {
         let listener = TcpListener::bind(self.address)?;
         for streams in listener.incoming() {
-            let mut buffer = [0u8; 1024];
+            let mut buffer = String::new();
             match streams {
                 Ok(mut stream) => {
-                    let number_of_bytes = stream.read(&mut buffer)?;
-                    if (buffer[0] == 1) {
+                    stream.read_to_string(&mut buffer)?;
+                    let deseralized: Block =  serde_json::from_str(buffer.as_str())?;
+                    println!("{:?}", deseralized.block_number())
+                    //println!("{:?}", serde_json::from_slice(&buffer)?);
+                    /*if (buffer[0] == 1) {
+
                         println!("{:?}", std::str::from_utf8(&buffer).unwrap());
                     } else {
                         println!("{}", "writing");
-                        stream.write(b"response");
-                    }
+                        stream.write(b"response")?;
+                    }*/
                 }
                 Err(e) => {
                     println!("{:?}", e);
