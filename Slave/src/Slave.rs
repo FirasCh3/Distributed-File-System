@@ -1,6 +1,6 @@
 use std::io::{Read, Write};
 use std::net::{Ipv4Addr, SocketAddrV4, TcpListener, TcpStream};
-use lib::Block;
+use lib::Message;
 use std::fs::File;
 
 #[derive(Debug)]
@@ -19,16 +19,19 @@ impl Slave {
         let listener = TcpListener::bind(self.address)?;
         for streams in listener.incoming() {
             let mut buffer = String::new();
+            let mut string = String::new();
             match streams {
                 Ok(mut stream) => {
                     stream.read_to_string(&mut buffer)?;
-                    let mut deserialized: Block =  serde_json::from_str(buffer.as_str())?;
+                    let mut deserialized: Message =  serde_json::from_str(buffer.as_str())?;
                     let content = deserialized.content();
-                    if (content[0] == 0){
-                        content.remove(0);
+                    if (deserialized.operation_type() == 0){
                         let filename = String::new() + "../resources/" + deserialized.filename() + deserialized.block_number().to_string().as_str() + ".txt";
+                        File::options().read(true).write(true).create(true);
                         let mut file = File::create(filename)?;
-                        println!("{:?}", String::from_utf8(deserialized.content().clone()));
+                        file.write_all(deserialized.content().as_bytes())?;
+
+
                     }
 
                 }
