@@ -2,19 +2,19 @@ use std::fs::File;
 use std::io::{Read, Write};
 use std::path::Path;
 use lib::Message;
-use std::net::TcpStream;
+use std::net::{Ipv4Addr, SocketAddrV4, TcpStream};
 
 pub struct Server {
-    slaves: [String; 3],
+    slaves: [SocketAddrV4; 3],
 }
 
 impl Server {
     pub fn new()-> Server{
         Server{
            slaves: [
-               String::from("127.0.0.1:4200"),
-               String::from("127.0.0.1:4201"),
-               String::from("127.0.0.1:4202")
+               SocketAddrV4::new(Ipv4Addr::new(127, 0, 0, 1), 4200),
+               SocketAddrV4::new(Ipv4Addr::new(127, 0, 0, 1), 4201),
+               SocketAddrV4::new(Ipv4Addr::new(127, 0, 0, 1), 4202)
            ]
         }
     }
@@ -32,12 +32,13 @@ impl Server {
         let content3 = &content[offset..];
 
 
-        let message1  = serde_json::to_string(&Message::new(content1.to_string(), 1, String::from(file_path.with_extension("").file_name().unwrap().to_str().unwrap()), 0)).unwrap();
-        let message2  = serde_json::to_string(&Message::new(content2.to_string(), 2, String::from(file_path.with_extension("").file_name().unwrap().to_str().unwrap()), 0)).unwrap();
-        let message3  = serde_json::to_string(&Message::new(content3.to_string(), 3, String::from(file_path.with_extension("").file_name().unwrap().to_str().unwrap()), 0)).unwrap();
-        for slave_address in &self.slaves{
-                let mut tcp_stream = TcpStream::connect(slave_address).unwrap();
-                tcp_stream.write_all(message1.as_bytes()).unwrap()
+        let message1:String  = serde_json::to_string(&Message::new(content1.to_string(), 1, String::from(file_path.with_extension("").file_name().unwrap().to_str().unwrap()), 0)).unwrap();
+        let message2:String  = serde_json::to_string(&Message::new(content2.to_string(), 2, String::from(file_path.with_extension("").file_name().unwrap().to_str().unwrap()), 0)).unwrap();
+        let message3:String  = serde_json::to_string(&Message::new(content3.to_string(), 3, String::from(file_path.with_extension("").file_name().unwrap().to_str().unwrap()), 0)).unwrap();
+        let messages:Vec<String> = vec![message1, message2, message3];
+        for (index, address)  in self.slaves.iter().enumerate(){
+            let mut tcp_stream = TcpStream::connect(address).unwrap();
+            tcp_stream.write_all(messages[index].as_bytes()).unwrap()
         }
 
 
