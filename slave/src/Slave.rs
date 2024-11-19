@@ -19,7 +19,6 @@ impl Slave {
         let listener = TcpListener::bind(self.address)?;
         for streams in listener.incoming() {
             let mut buffer = String::new();
-            let mut string = String::new();
             match streams {
                 Ok(mut stream) => {
                     stream.read_to_string(&mut buffer)?;
