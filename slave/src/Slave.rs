@@ -1,7 +1,8 @@
+use std::fs;
 use std::io::{Read, Write};
 use std::net::{Ipv4Addr, SocketAddrV4, TcpListener, TcpStream};
 use lib::Message;
-use std::fs::File;
+use std::fs::{File, OpenOptions};
 
 #[derive(Debug)]
 pub struct Slave {
@@ -18,19 +19,18 @@ impl Slave {
     pub fn listen_and_serve(&self) -> std::io::Result<()> {
         let listener = TcpListener::bind(self.address)?;
         for streams in listener.incoming() {
-            let mut buffer = String::new();
+            let mut buffer:Vec<u8> = Vec::new();
             match streams {
                 Ok(mut stream) => {
-                    stream.read_to_string(&mut buffer)?;
-                    let mut deserialized: Message =  serde_json::from_str(buffer.as_str())?;
-                    let content = deserialized.content();
+                    stream.read_to_end(&mut buffer)?;
+                    let mut deserialized: Message =  bincode::deserialize(buffer.as_slice()).unwrap();
                     if (deserialized.operation_type() == 0){
-                        let filename = String::new() + "../resources/" + deserialized.filename() + deserialized.block_number().to_string().as_str() + ".txt";
-                        File::options().read(true).write(true).create(true);
-                        let mut file = File::create(filename)?;
-                        file.write_all(deserialized.content().as_bytes())?;
-
-
+                        let filename = "../resources/data.bin";
+                        let mut file = OpenOptions::new().append(true).open(filename)?;
+                        bincode::serialize_into(file, &deserialized).unwrap()
+                    }else {
+                        let block_number = deserialized.block_number();
+                        //TODO: read block from data.bin file and send it back to server
                     }
 
                 }

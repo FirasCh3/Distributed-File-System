@@ -1,7 +1,7 @@
 server/target/
 server/src/*.exe
 server/src/*.pdb
-Slave/target
+slave/target
 Slave/src/*.exe
 Slave/src/*.pdb
 lib/target

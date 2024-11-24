@@ -32,18 +32,14 @@ impl Server {
         let content3 = &content[offset..];
 
 
-        let message1:String  = serde_json::to_string(&Message::new(content1.to_string(), 1, String::from(file_path.with_extension("").file_name().unwrap().to_str().unwrap()), 0)).unwrap();
-        let message2:String  = serde_json::to_string(&Message::new(content2.to_string(), 2, String::from(file_path.with_extension("").file_name().unwrap().to_str().unwrap()), 0)).unwrap();
-        let message3:String  = serde_json::to_string(&Message::new(content3.to_string(), 3, String::from(file_path.with_extension("").file_name().unwrap().to_str().unwrap()), 0)).unwrap();
-        let messages:Vec<String> = vec![message1, message2, message3];
+        let message1:Vec<u8>  = bincode::serialize(&Message::new(content1.to_string(), 1, String::from(file_path.with_extension("").file_name().unwrap().to_str().unwrap()), 0)).unwrap();
+        let message2:Vec<u8> = bincode::serialize(&Message::new(content2.to_string(), 2, String::from(file_path.with_extension("").file_name().unwrap().to_str().unwrap()), 0)).unwrap();
+        let message3:Vec<u8>  = bincode::serialize(&Message::new(content3.to_string(), 3, String::from(file_path.with_extension("").file_name().unwrap().to_str().unwrap()), 0)).unwrap();
+        let messages:Vec<Vec<u8>> = vec![message1, message2, message3];
         for (index, address)  in self.slaves.iter().enumerate(){
             let mut tcp_stream = TcpStream::connect(address).unwrap();
-            tcp_stream.write_all(messages[index].as_bytes()).unwrap()
+            tcp_stream.write_all(&messages[index]).unwrap()
         }
-
-
-
-
     }
 
 }
